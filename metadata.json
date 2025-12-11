@@ -1,0 +1,8 @@
+{
+  "name": "Gesture Christmas Tree",
+  "description": "A cinematic, 3D interactive Christmas tree controlled by hand gestures using MediaPipe and Three.js. Features an AI chatbot powered by Gemini.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
