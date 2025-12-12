@@ -4301,12 +4301,6 @@ void main() {
   varying float vPatternSeed;
   varying vec3 vViewPosition;
   
-  float hash(vec3 p) {
-      p = fract(p * 0.3183099 + 0.1);
-      p *= 17.0;
-      return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
-  }
-  
   void main() {
     vec3 normal = normalize(vNormal);
     vec3 viewDir = normalize(vViewPosition);
@@ -4318,21 +4312,20 @@ void main() {
     vec3 albedo = vColor;
     float roughness = 0.4;
     float metalness = 0.0;
-    float sparkle = 0.0;
     
+    // Simplified material logic: Removed hash/noise/sparkle
     if (materialType < 0.4) {
-        float noise = hash(vLocalPos * 30.0);
-        float sparkleAngle = max(dot(normal, viewDir), 0.0);
-        if (noise > 0.95) sparkle = 1.0 * sparkleAngle;
-        albedo *= 0.8; 
-        roughness = 0.8;
+        // Smooth matte finish instead of sparkle
+        roughness = 0.7;
     } else if (materialType < 0.7) {
+        // Metallic / Reflective
         metalness = 0.9;
         roughness = 0.1;
         vec3 ref = reflect(-viewDir, normal);
         vec3 envColor = vec3(0.1) + 0.5 * pow(max(dot(ref, vec3(0.0, 1.0, 0.0)), 0.0), 2.0) * vec3(1.0, 0.9, 0.8);
         albedo = mix(albedo, albedo * envColor * 2.0, 0.5);
     } else {
+        // Patterned (Stripes/Dots)
         roughness = 0.5;
         metalness = 0.2;
         if (vPatternSeed > 0.85) {
@@ -4355,8 +4348,9 @@ void main() {
     vec3 specColor = mix(vec3(1.0), albedo, metalness) * specular;
     vec3 finalColor = ambient + diffuse + specColor;
     finalColor += vec3(0.5, 0.4, 0.2) * fresnel * (1.0 - metalness); 
-    finalColor += vec3(1.0, 1.0, 0.8) * sparkle * 2.0;
-
+    
+    // Removed sparkle addition here
+    
     gl_FragColor = vec4(finalColor, 1.0);
   }
 `,NU=`
